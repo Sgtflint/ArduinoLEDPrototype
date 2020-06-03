@@ -1,0 +1,112 @@
+#include "FastLED.h
+#define NUM_LEDS 150 
+#define DATA_PIN 4 
+#define BRIGHTNESS 255
+int potPinMASTER = A0;
+int potPinRED = A1; 
+int potPinGREEN = A2;
+int potPinBLUE = A3;
+int valMASTER;
+int MASTER;
+int valRED;
+int RED;
+int valGREEN;
+int GREEN;
+int valBLUE;
+int BLUE;
+int SWITCH_PIN = 7; 
+int TRIGGER_PIN = 8;
+int IN_PIN;
+int PIN_STATE = LOW;
+CRGB leds[NUM_LEDS];
+
+
+//********************************************//
+//___________________Setup____________________//
+//********************************************//
+void setup() { 
+ delay(2000);
+Serial.begin(115200);
+
+FastLED.addLeds<WS2812B, DATA_PIN>(leds, NUM_LEDS);
+FastLED.setBrightness(BRIGHTNESS);
+
+ pinMode(potPinMASTER, INPUT);
+ pinMode(potPinRED, INPUT);
+ pinMode(potPinGREEN, INPUT);
+ pinMode(potPinBLUE, INPUT);
+ pinMode(SWITCH_PIN, INPUT);
+ pinMode(TRIGGER_PIN, INPUT);
+}
+
+//********************************************//
+//____________checkFadersMixer _________________//
+//********************************************//
+void checkFadersMixer() {
+
+ valMASTER = analogRead(potPinMASTER);
+ MASTER = map(valMASTER, 0, 1023, 0, 255);
+ FastLED.setBrightness(MASTER);
+ valRED = analogRead(potPinRED);
+ RED = map(valRED, 0, 1023, 0, 255);
+ valGREEN = analogRead(potPinGREEN);
+ GREEN = map(valGREEN, 0, 1023, 0, 255);
+ valBLUE = analogRead(potPinBLUE);
+ BLUE = map(valBLUE, 0, 1023, 0, 255);
+delay(50); ”Forsinkelse 50ms”
+}
+
+//********************************************//
+//______________checkFadersBlink. _______________//
+//********************************************//
+void checkFadersBlink() {
+ valMASTER = analogRead(potPinMASTER);
+ MASTER = map(valMASTER, 0, 1023, 0, 255);
+ FastLED.setBrightness(MASTER);
+ valRED = analogRead(potPinRED);
+ RED = map(valRED, 0, 1023, 0, 255);
+ valGREEN = analogRead(potPinGREEN);
+ GREEN = map(valGREEN, 0, 1023, 0, 255);
+ valBLUE = analogRead(potPinBLUE);
+ BLUE = map(valBLUE, 0, 1023, 0, 255);
+delay(50); ”Forsinkelse 50ms”
+}
+
+//********************************************//
+//___________________loop_____________________//
+//********************************************//
+void loop() { 
+ if (digitalRead(SWITCH_PIN) == HIGH) {
+ checkFadersMixer()
+ for (int i = 0; i < NUM_LEDS; i++) {
+leds[i] = CRGB(RED, GREEN, BLUE);
+ }
+ FastLED.show();
+ }
+ else { 
+ checkFadersBlink();
+ IN_PIN = digitalRead(TRIGGER_PIN);
+
+if (PIN_STATE != IN_PIN) {
+ PIN_STATE = IN_PIN;
+ }
+ if (PIN_STATE == HIGH) {
+ for (int i = 0; i < NUM_LEDS; i++) {
+ leds[i] = CRGB(RED, GREEN, BLUE);
+ }
+ FastLED.show();
+ delay(150);
+ for (int i = 0; i < NUM_LEDS; i++) {
+ leds[i] = CRGB(0, 0, 0);
+ }
+ FastLED.show();
+ }
+ else { 
+ for (int i = 0; i < NUM_LEDS; i++) { 
+ leds[i] = CRGB(0, 0, 0); 
+ }
+ FastLED.show(); 
+ }
+ }
+ }
+}
